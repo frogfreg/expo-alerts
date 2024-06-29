@@ -1,5 +1,5 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, Platform } from "react-native";
+import { View, TextInput, Button, StyleSheet, Text } from "react-native";
+import BackgroundTimer from "react-native-background-timer";
 import * as Notifications from "expo-notifications";
 
 Notifications.setNotificationHandler({
@@ -10,7 +10,34 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function testNotifactionSending() {
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text>Search Term</Text>
+      <TextInput clearTextOnFocus={true} style={styles.tinput}></TextInput>
+
+      <Text>Target price</Text>
+      <TextInput
+        clearTextOnFocus={true}
+        style={styles.tinput}
+        inputMode="numeric"
+      ></TextInput>
+      <Button
+        styles={styles.alertButton}
+        title="set alert"
+        onPress={() => {
+          BackgroundTimer.runBackgroundTimer(() => {
+            // TODO: call backend each 30 minutes
+            console.log("a notification should be trigger right now");
+            testNotificationSending();
+          }, 10000);
+        }}
+      />
+    </View>
+  );
+}
+
+async function testNotificationSending() {
   const { status: currentStatus } = await Notifications.getPermissionsAsync();
 
   console.log(currentStatus);
@@ -39,24 +66,21 @@ async function testNotifactionSending() {
   });
 }
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>This should be a native android/ios app at some point</Text>
-      <Button
-        title="press to schedule a notification"
-        onPress={testNotifactionSending}
-      />
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 20,
+    marginTop: 100,
+  },
+  tinput: {
+    marginTop: 10,
+    marginBottom: 10,
+    fontSize: 20,
+    borderColor: "black",
+    borderWidth: 2.5,
+    borderRadius: 10,
+    padding: 10,
+  },
+  alertButton: {
+    padding: 30,
   },
 });
